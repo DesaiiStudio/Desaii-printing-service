@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Printing Price Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    input, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>3D Printing Price Calculator</h2>
+    <label for="weight">Material Weight (grams):</label>
+    <input type="number" id="weight" placeholder="Enter weight in grams">
+
+    <label for="time">Printing Time (hours):</label>
+    <input type="number" id="time" placeholder="Enter time in hours">
+
+    <button onclick="calculatePrice()">Calculate Price</button>
+
+    <h3>Total Price: <span id="price">0</span> THB</h3>
+  </div>
+
+  <script>
+    function calculatePrice() {
+      const weight = parseFloat(document.getElementById("weight").value) || 0;
+      const time = parseFloat(document.getElementById("time").value) || 0;
+      const ratePerGram = 2.4; // Price per gram in THB
+      const ratePerHour = 10; // Price per hour in THB
+      const baseFee = 300; // Base service fee in THB
+
+      const materialCost = weight * ratePerGram;
+      const printingCost = time * ratePerHour;
+      const totalPrice = materialCost + printingCost + baseFee;
+
+      document.getElementById("price").textContent = totalPrice.toFixed(2);
+    }
+  </script>
+</body>
+</html>
