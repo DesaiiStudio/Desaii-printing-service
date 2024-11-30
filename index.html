@@ -109,16 +109,16 @@
         <option value="PETG">PETG</option>
         <option value="PLA">PLA</option>
         <option value="ABS">ABS</option>
-        <option value="PETG-CF" disabled>PETG CF (Unavailable)</option>
+        <option value="PETG-CF" disabled>PETG CF (กำลังมาเร็วๆนี้)</option>
       </select>
 
       <label for="weight">Material Weight (grams):</label>
       <input type="number" id="weight" placeholder="Enter weight in grams">
 
-      <label for="hours">Printing Time (Hours):</label>
+      <label for="hours">Printing Time (Hours / ชัวโมง):</label>
       <input type="number" id="hours" placeholder="Enter hours">
 
-      <label for="minutes">Printing Time (Minutes):</label>
+      <label for="minutes">Printing Time (Minutes / นาที):</label>
       <input type="number" id="minutes" placeholder="Enter minutes">
 
       <button onclick="calculatePrice()">Calculate Price</button>
@@ -160,10 +160,10 @@
 
     function updateFilamentDescription() {
       const descriptions = {
-        PETG: "PETG (Polyethylene Terephthalate Glycol) มีจุดเสียรูปที่ความร้อนประมาณ 80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
-        PLA: "PLA (Polylactic Acid) มีจุดเสียรูปที่ความร้อนประมาณ 60°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
-        ABS: "ABS (Acrylonitrile Butadiene Styrene) มีจุดเสียรูปที่ความร้อนประมาณ 105°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
-        "PETG-CF": "PETG CF ยังไม่พร้อมใช้งานในขณะนี้"
+        PETG: "PETG (Polyethylene Terephthalate Glycol) <br>มีจุดเสียรูปที่ความร้อนประมาณ ~80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
+        PLA: "PLA (Polylactic Acid) <br>มีจุดเสียรูปที่ความร้อนประมาณ ~65°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
+        ABS: "ABS (Acrylonitrile Butadiene Styrene) <br>มีจุดเสียรูปที่ความร้อนประมาณ ~90°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
+        "PETG-CF": "PETG CF กำลังมาเร็วๆนี้"
       };
 
       const selectedFilament = document.getElementById("filament").value;
