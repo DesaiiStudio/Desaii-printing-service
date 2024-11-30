@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Printing Price Calculator</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -26,9 +27,6 @@
       border-radius: 5px;
       background-color: white; /* White container */
       color: black; /* Black text inside the container */
-    }
-    .video-container {
-      flex: 1;
     }
     iframe {
       width: 100%;
@@ -83,18 +81,15 @@
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container" id="capture">
     <!-- Video Section -->
-    <div class="video-container">
+    <div>
       <iframe 
         src="https://www.youtube.com/embed/4InFd5DoZa4" 
         title="YouTube video player" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
         allowfullscreen>
       </iframe>
-      <div id="filamentDescription" class="filament-description">
-        <p>Select a filament type to see its description here.</p>
-      </div>
     </div>
 
     <!-- Form Section -->
@@ -109,21 +104,28 @@
         <option value="PETG">PETG</option>
         <option value="PLA">PLA</option>
         <option value="ABS">ABS</option>
-        <option value="PETG-CF" disabled>PETG CF (กำลังมาเร็วๆนี้)</option>
+        <option value="PETG-CF" disabled>PETG CF (Unavailable)</option>
       </select>
 
       <label for="weight">Material Weight (grams):</label>
       <input type="number" id="weight" placeholder="Enter weight in grams">
 
-      <label for="hours">Printing Time (Hours / ชัวโมง):</label>
+      <label for="hours">Printing Time (Hours):</label>
       <input type="number" id="hours" placeholder="Enter hours">
 
-      <label for="minutes">Printing Time (Minutes / นาที):</label>
+      <label for="minutes">Printing Time (Minutes):</label>
       <input type="number" id="minutes" placeholder="Enter minutes">
 
       <button onclick="calculatePrice()">Calculate Price</button>
 
       <h3>Total Price: <span id="price">0</span> THB</h3>
+
+      <!-- Save as PNG Button -->
+      <button onclick="saveAsPNG()">Save Quotation as PNG</button>
+
+      <div id="filamentDescription" class="filament-description">
+        <p>Select a filament type to see its description here.</p>
+      </div>
     </div>
   </div>
 
@@ -160,15 +162,26 @@
 
     function updateFilamentDescription() {
       const descriptions = {
-        PETG: "PETG (Polyethylene Terephthalate Glycol) <br>มีจุดเสียรูปที่ความร้อนประมาณ ~80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
-        PLA: "PLA (Polylactic Acid) <br>มีจุดเสียรูปที่ความร้อนประมาณ ~65°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
-        ABS: "ABS (Acrylonitrile Butadiene Styrene) <br>มีจุดเสียรูปที่ความร้อนประมาณ ~90°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
-        "PETG-CF": "PETG CF กำลังมาเร็วๆนี้"
+        PETG: "PETG (Polyethylene Terephthalate Glycol) มีจุดเสียรูปที่ความร้อนประมาณ 80°C<br>เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
+        PLA: "PLA (Polylactic Acid) มีจุดเสียรูปที่ความร้อนประมาณ 60°C<br>เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
+        ABS: "ABS (Acrylonitrile Butadiene Styrene) มีจุดเสียรูปที่ความร้อนประมาณ 105°C<br>เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
+        "PETG-CF": "PETG CF ยังไม่พร้อมใช้งานในขณะนี้"
       };
 
       const selectedFilament = document.getElementById("filament").value;
       const description = descriptions[selectedFilament] || "Select a filament type to see its description.";
       document.getElementById("filamentDescription").innerHTML = `<p>${description}</p>`;
+    }
+
+    function saveAsPNG() {
+      html2canvas(document.getElementById("capture")).then(function(canvas) {
+        // Convert canvas to data URL
+        const imgData = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.href = imgData;
+        link.download = 'quotation.png';
+        link.click();
+      });
     }
   </script>
 </body>
