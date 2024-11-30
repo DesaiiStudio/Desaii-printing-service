@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>3D Printing Price Calculator</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -27,6 +26,9 @@
       border-radius: 5px;
       background-color: white; /* White container */
       color: black; /* Black text inside the container */
+    }
+    .video-container {
+      flex: 1;
     }
     iframe {
       width: 100%;
@@ -81,15 +83,18 @@
   </style>
 </head>
 <body>
-  <div class="container" id="capture">
+  <div class="container">
     <!-- Video Section -->
-    <div>
+    <div class="video-container">
       <iframe 
         src="https://www.youtube.com/embed/4InFd5DoZa4" 
         title="YouTube video player" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
         allowfullscreen>
       </iframe>
+      <div id="filamentDescription" class="filament-description">
+        <p>Select a filament type to see its description here.</p>
+      </div>
     </div>
 
     <!-- Form Section -->
@@ -120,16 +125,14 @@
 
       <h3>Total Price: <span id="price">0</span> THB</h3>
 
-      <!-- Save as PNG Button -->
-      <button onclick="saveAsPNG()">Save Quotation as PNG</button>
-
-      <div id="filamentDescription" class="filament-description">
-        <p>Select a filament type to see its description here.</p>
-      </div>
+      <!-- Copy Quotation Button -->
+      <button id="copyButton" onclick="copyQuotation()" style="background-color: #2196F3;">Copy Quotation</button>
     </div>
   </div>
 
   <script>
+    let calculatedInfo = "";
+
     function calculatePrice() {
       const filamentRate = {
         PETG: 2.2,
@@ -157,14 +160,18 @@
       // Apply base fee only if the calculated price is <= 200 THB
       const totalPrice = calculatedPrice > 200 ? calculatedPrice : calculatedPrice + baseFee;
 
+      // Update price on page
       document.getElementById("price").textContent = totalPrice.toFixed(2);
+
+      // Store the calculated info for copying
+      calculatedInfo = `Filament: ${selectedFilament}\nWeight: ${weight}g\nTime: ${hours}h ${minutes}m\nTotal Price: ${totalPrice.toFixed(2)} THB`;
     }
 
     function updateFilamentDescription() {
       const descriptions = {
-        PETG: "PETG (Polyethylene Terephthalate Glycol) มีจุดเสียรูปที่ความร้อนประมาณ 80°C<br>เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
-        PLA: "PLA (Polylactic Acid) มีจุดเสียรูปที่ความร้อนประมาณ 60°C<br>เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
-        ABS: "ABS (Acrylonitrile Butadiene Styrene) มีจุดเสียรูปที่ความร้อนประมาณ 105°C<br>เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
+        PETG: "PETG (Polyethylene Terephthalate Glycol) มีจุดเสียรูปที่ความร้อนประมาณ 80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
+        PLA: "PLA (Polylactic Acid) มีจุดเสียรูปที่ความร้อนประมาณ 60°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
+        ABS: "ABS (Acrylonitrile Butadiene Styrene) มีจุดเสียรูปที่ความร้อนประมาณ 105°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
         "PETG-CF": "PETG CF ยังไม่พร้อมใช้งานในขณะนี้"
       };
 
@@ -173,16 +180,22 @@
       document.getElementById("filamentDescription").innerHTML = `<p>${description}</p>`;
     }
 
-    function saveAsPNG() {
-      html2canvas(document.getElementById("capture")).then(function(canvas) {
-        // Convert canvas to data URL
-        const imgData = canvas.toDataURL("image/png");
-        const link = document.createElement('a');
-        link.href = imgData;
-        link.download = 'quotation.png';
-        link.click();
-      });
+    function copyQuotation() {
+      if (calculatedInfo) {
+        const textArea = document.createElement("textarea");
+        textArea.value = calculatedInfo;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        alert("Quotation copied to clipboard!");
+      }
     }
+
+    // Call the function to set default filament description as PETG when the page loads
+    window.onload = function() {
+      updateFilamentDescription();
+    };
   </script>
 </body>
 </html>
