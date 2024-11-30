@@ -27,11 +27,21 @@
       background-color: white; /* White container */
       color: black; /* Black text inside the container */
     }
+    .video-container {
+      flex: 1;
+    }
     iframe {
       width: 100%;
-      max-width: 300px;
-      height: 180px;
+      max-width: 500px; /* Enlarged video */
+      height: 300px; /* Larger height */
       border: none;
+    }
+    .filament-description {
+      margin-top: 20px;
+      background-color: #f0f0f0;
+      padding: 10px;
+      border-radius: 5px;
+      color: black;
     }
     .header {
       text-align: center;
@@ -75,13 +85,16 @@
 <body>
   <div class="container">
     <!-- Video Section -->
-    <div>
+    <div class="video-container">
       <iframe 
         src="https://www.youtube.com/embed/4InFd5DoZa4" 
         title="YouTube video player" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
         allowfullscreen>
       </iframe>
+      <div id="filamentDescription" class="filament-description">
+        <p>Select a filament type to see its description here.</p>
+      </div>
     </div>
 
     <!-- Form Section -->
@@ -92,11 +105,11 @@
       </div>
 
       <label for="filament">Select Filament Type:</label>
-      <select id="filament">
-        <option value="2.2">PETG</option>
-        <option value="2">PLA</option>
-        <option value="3">ABS</option>
-        <option value="2.8" disabled>PETG CF (Unavailable)</option>
+      <select id="filament" onchange="updateFilamentDescription()">
+        <option value="PETG">PETG</option>
+        <option value="PLA">PLA</option>
+        <option value="ABS">ABS</option>
+        <option value="PETG-CF" disabled>PETG CF (Unavailable)</option>
       </select>
 
       <label for="weight">Material Weight (grams):</label>
@@ -116,7 +129,13 @@
 
   <script>
     function calculatePrice() {
-      const filamentRate = parseFloat(document.getElementById("filament").value) || 0;
+      const filamentRate = {
+        PETG: 2.2,
+        PLA: 2,
+        ABS: 3,
+        "PETG-CF": 2.8
+      };
+      const selectedFilament = document.getElementById("filament").value;
       const weight = parseFloat(document.getElementById("weight").value) || 0;
       const hours = parseFloat(document.getElementById("hours").value) || 0;
       const minutes = parseFloat(document.getElementById("minutes").value) || 0;
@@ -126,9 +145,10 @@
 
       const ratePerHour = 10; // Price per hour in THB
       const baseFee = 200; // Base service fee in THB
+      const filamentRatePerGram = filamentRate[selectedFilament] || 0;
 
       // Calculate costs
-      const materialCost = weight * filamentRate;
+      const materialCost = weight * filamentRatePerGram;
       const printingCost = totalHours * ratePerHour;
       const calculatedPrice = materialCost + printingCost;
 
@@ -136,6 +156,19 @@
       const totalPrice = calculatedPrice > 200 ? calculatedPrice : calculatedPrice + baseFee;
 
       document.getElementById("price").textContent = totalPrice.toFixed(2);
+    }
+
+    function updateFilamentDescription() {
+      const descriptions = {
+        PETG: "PETG (Polyethylene Terephthalate Glycol) มีจุดเสียรูปที่ความร้อนประมาณ 80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
+        PLA: "PLA (Polylactic Acid) มีจุดเสียรูปที่ความร้อนประมาณ 60°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
+        ABS: "ABS (Acrylonitrile Butadiene Styrene) มีจุดเสียรูปที่ความร้อนประมาณ 105°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
+        "PETG-CF": "PETG CF ยังไม่พร้อมใช้งานในขณะนี้"
+      };
+
+      const selectedFilament = document.getElementById("filament").value;
+      const description = descriptions[selectedFilament] || "Select a filament type to see its description.";
+      document.getElementById("filamentDescription").innerHTML = `<p>${description}</p>`;
     }
   </script>
 </body>
