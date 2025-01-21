@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D printing service</title>
+  <title>3D Printing Service</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
-      background-color: black; /* Black background */
-      color: white; /* White text */
+      background-color: black;
+      color: white;
     }
     .container {
       display: flex;
@@ -24,16 +24,16 @@
       padding: 20px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      background-color: white; /* White container */
-      color: black; /* Black text inside the container */
+      background-color: white;
+      color: black;
     }
     .video-container {
       flex: 1;
     }
     iframe {
       width: 150%;
-      max-width: 2000px; /* Enlarged video */
-      height: =2000px; /* Larger height */
+      max-width: 2000px;
+      height: =2000px;
       border: none;
     }
     .filament-description {
@@ -62,13 +62,13 @@
       font-size: 16px;
     }
     input, select {
-      background-color: #f9f9f9; /* Light gray input fields */
-      color: black; /* Black text in inputs */
+      background-color: #f9f9f9;
+      color: black;
       border: 1px solid #ccc;
       border-radius: 3px;
     }
     button {
-      background-color: #4CAF50; /* Green button */
+      background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 3px;
@@ -78,7 +78,7 @@
       background-color: #45a049;
     }
     h3 {
-      color: black; /* Result text matches container styling */
+      color: black;
     }
   </style>
 </head>
@@ -101,7 +101,7 @@
     <div class="form-container">
       <div class="header">
         <img src="logo.png" alt="Logo">
-        <h1>3D printing service</h1>
+        <h1>3D Printing Service</h1>
       </div>
 
       <label for="filament">Select Filament Type:</label>
@@ -149,7 +149,7 @@
       const totalHours = hours + (minutes / 60);
 
       const ratePerHour = 10; // Price per hour in THB
-      const baseFee = 100; // Base service fee in THB
+      const baseFee = 100; // Initial base service fee in THB
       const filamentRatePerGram = filamentRate[selectedFilament] || 0;
 
       // Calculate costs
@@ -157,8 +157,16 @@
       const printingCost = totalHours * ratePerHour;
       const calculatedPrice = materialCost + printingCost;
 
-      // Apply base fee only if the calculated price is <= 200 THB
-      const totalPrice = calculatedPrice > 600 ? calculatedPrice : calculatedPrice + baseFee;
+      // Adjust base fee based on total price
+      let adjustedBaseFee = baseFee;
+      if (calculatedPrice > 600) {
+        // Gradually reduce the base fee; reaches 0 at 1,000 THB
+        const excess = calculatedPrice - 600;
+        const reduction = Math.min((excess / 400) * baseFee, baseFee);
+        adjustedBaseFee = baseFee - reduction;
+      }
+
+      const totalPrice = calculatedPrice + adjustedBaseFee;
 
       // Update price on page
       document.getElementById("price").textContent = totalPrice.toFixed(2);
@@ -199,3 +207,4 @@
   </script>
 </body>
 </html>
+
