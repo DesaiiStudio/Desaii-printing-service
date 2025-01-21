@@ -149,7 +149,7 @@
       const totalHours = hours + (minutes / 60);
 
       const ratePerHour = 10; // Price per hour in THB
-      const baseFee = 200; // Base service fee in THB
+      const baseFee = 100; // Base service fee in THB
       const filamentRatePerGram = filamentRate[selectedFilament] || 0;
 
       // Calculate costs
@@ -158,7 +158,7 @@
       const calculatedPrice = materialCost + printingCost;
 
       // Apply base fee only if the calculated price is <= 200 THB
-      const totalPrice = calculatedPrice > 200 ? calculatedPrice : calculatedPrice + baseFee;
+      const totalPrice = calculatedPrice > 600 ? calculatedPrice : calculatedPrice + baseFee;
 
       // Update price on page
       document.getElementById("price").textContent = totalPrice.toFixed(2);
