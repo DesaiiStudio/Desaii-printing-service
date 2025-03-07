@@ -108,7 +108,7 @@
         <option value="PETG">PETG</option>
         <option value="PLA">PLA</option>
         <option value="ABS">ABS</option>
-        <option value="PETG-CF" disabled>PETG CF (เร็วๆนี้)</option>
+        <option value="PETG-CF">PETG CF</option>
       </select>
 
       <label for="weight">Material Weight (grams กรัม):</label>
@@ -144,19 +144,16 @@
       const hours = parseFloat(document.getElementById("hours").value) || 0;
       const minutes = parseFloat(document.getElementById("minutes").value) || 0;
 
-      // Convert minutes to fractional hours
       const totalHours = hours + (minutes / 60);
 
       const ratePerHour = 10;
       const baseFee = 150;
       const filamentRatePerGram = filamentRate[selectedFilament] || 0;
 
-      // Calculate costs
       const materialCost = weight * filamentRatePerGram;
       const printingCost = totalHours * ratePerHour;
       const calculatedPrice = materialCost + printingCost;
 
-      // Adjust base fee based on total price
       let adjustedBaseFee = baseFee;
       if (calculatedPrice > 600) {
         const excess = calculatedPrice - 600;
@@ -170,35 +167,6 @@
 
       calculatedInfo = `Filament: ${selectedFilament}\nWeight: ${weight}g\nTime: ${hours}h ${minutes}m\nTotal Price: ${totalPrice.toFixed(2)} THB`;
     }
-
-    function updateFilamentDescription() {
-      const descriptions = {
-        PETG: "PETG (Polyethylene Terephthalate Glycol) <br> มีจุดเสียรูปที่ความร้อนประมาณ 80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
-        PLA: "PLA (Polylactic Acid)<br> มีจุดเสียรูปที่ความร้อนประมาณ 65°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
-        ABS: "ABS (Acrylonitrile Butadiene Styrene)<br> มีจุดเสียรูปที่ความร้อนประมาณ 90°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
-        "PETG-CF": "PETG CF ยังไม่พร้อมใช้งานในขณะนี้"
-      };
-
-      const selectedFilament = document.getElementById("filament").value;
-      const description = descriptions[selectedFilament] || "Select a filament type to see its description.";
-      document.getElementById("filamentDescription").innerHTML = `<p>${description}</p>`;
-    }
-
-    function copyQuotation() {
-      if (calculatedInfo) {
-        const textArea = document.createElement("textarea");
-        textArea.value = calculatedInfo;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        alert("Quotation copied to clipboard!");
-      }
-    }
-
-    window.onload = function() {
-      updateFilamentDescription();
-    };
   </script>
 </body>
 </html>
