@@ -83,6 +83,7 @@
 </head>
 <body>
   <div class="container">
+    <!-- Video Section -->
     <div class="video-container">
       <iframe 
         src="https://www.youtube.com/embed/42GNlstzt9Y" 
@@ -95,6 +96,7 @@
       </div>
     </div>
 
+    <!-- Form Section -->
     <div class="form-container">
       <div class="header">
         <img src="logo.png" alt="Logo">
@@ -106,7 +108,7 @@
         <option value="PETG">PETG</option>
         <option value="PLA">PLA</option>
         <option value="ABS">ABS</option>
-        <option value="PETG-CF">PETG CF</option>
+        <option value="PETG-CF" disabled>PETG CF (เร็วๆนี้)</option>
       </select>
 
       <label for="weight">Material Weight (grams กรัม):</label>
@@ -119,7 +121,10 @@
       <input type="number" id="minutes" placeholder="Enter minutes">
 
       <button onclick="calculatePrice()">Calculate Price</button>
+
       <h3>Total Price: <span id="price">0</span> THB</h3>
+
+      <!-- Copy Quotation Button -->
       <button id="copyButton" onclick="copyQuotation()" style="background-color: #2196F3;">Copy Quotation</button>
     </div>
   </div>
@@ -127,15 +132,68 @@
   <script>
     let calculatedInfo = "";
 
+    function calculatePrice() {
+      const filamentRate = {
+        PETG: 2.4,
+        PLA: 2,
+        ABS: 3,
+        "PETG-CF": 2.8
+      };
+      const selectedFilament = document.getElementById("filament").value;
+      const weight = parseFloat(document.getElementById("weight").value) || 0;
+      const hours = parseFloat(document.getElementById("hours").value) || 0;
+      const minutes = parseFloat(document.getElementById("minutes").value) || 0;
+
+      // Convert minutes to fractional hours
+      const totalHours = hours + (minutes / 60);
+
+      const ratePerHour = 10;
+      const baseFee = 150;
+      const filamentRatePerGram = filamentRate[selectedFilament] || 0;
+
+      // Calculate costs
+      const materialCost = weight * filamentRatePerGram;
+      const printingCost = totalHours * ratePerHour;
+      const calculatedPrice = materialCost + printingCost;
+
+      // Adjust base fee based on total price
+      let adjustedBaseFee = baseFee;
+      if (calculatedPrice > 600) {
+        const excess = calculatedPrice - 600;
+        const reduction = Math.min((excess / 400) * baseFee, baseFee);
+        adjustedBaseFee = baseFee - reduction;
+      }
+
+      const totalPrice = calculatedPrice + adjustedBaseFee;
+
+      document.getElementById("price").textContent = totalPrice.toFixed(2);
+
+      calculatedInfo = Filament: ${selectedFilament}\nWeight: ${weight}g\nTime: ${hours}h ${minutes}m\nTotal Price: ${totalPrice.toFixed(2)} THB;
+    }
+
     function updateFilamentDescription() {
       const descriptions = {
         PETG: "PETG (Polyethylene Terephthalate Glycol) <br> มีจุดเสียรูปที่ความร้อนประมาณ 80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
         PLA: "PLA (Polylactic Acid)<br> มีจุดเสียรูปที่ความร้อนประมาณ 65°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
         ABS: "ABS (Acrylonitrile Butadiene Styrene)<br> มีจุดเสียรูปที่ความร้อนประมาณ 90°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
-        "PETG-CF": "PETG CF (Polyethylene Terephthalate Glycol Carbon Fiber) <br> มีความแข็งแรงสูง น้ำหนักเบา และทนความร้อนมากกว่าปกติ เหมาะสำหรับงานที่ต้องการความแข็งแรงพิเศษ"
+        "PETG-CF": "PETG CF ยังไม่พร้อมใช้งานในขณะนี้"
       };
+
       const selectedFilament = document.getElementById("filament").value;
-      document.getElementById("filamentDescription").innerHTML = `<p>${descriptions[selectedFilament]}</p>`;
+      const description = descriptions[selectedFilament] || "Select a filament type to see its description.";
+      document.getElementById("filamentDescription").innerHTML = <p>${description}</p>;
+    }
+
+    function copyQuotation() {
+      if (calculatedInfo) {
+        const textArea = document.createElement("textarea");
+        textArea.value = calculatedInfo;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        alert("Quotation copied to clipboard!");
+      }
     }
 
     window.onload = function() {
