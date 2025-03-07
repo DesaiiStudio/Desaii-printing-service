@@ -108,7 +108,7 @@
         <option value="PETG">PETG</option>
         <option value="PLA">PLA</option>
         <option value="ABS">ABS</option>
-        <option value="PETG-CF" disabled>PETG CF (เร็วๆนี้)</option>
+        <option value="PETG-CF">PETG CF</option>
       </select>
 
       <label for="weight">Material Weight (grams กรัม):</label>
@@ -168,7 +168,7 @@
 
       document.getElementById("price").textContent = totalPrice.toFixed(2);
 
-      calculatedInfo = Filament: ${selectedFilament}\nWeight: ${weight}g\nTime: ${hours}h ${minutes}m\nTotal Price: ${totalPrice.toFixed(2)} THB;
+      calculatedInfo = `Filament: ${selectedFilament}\nWeight: ${weight}g\nTime: ${hours}h ${minutes}m\nTotal Price: ${totalPrice.toFixed(2)} THB`;
     }
 
     function updateFilamentDescription() {
@@ -176,12 +176,12 @@
         PETG: "PETG (Polyethylene Terephthalate Glycol) <br> มีจุดเสียรูปที่ความร้อนประมาณ 80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
         PLA: "PLA (Polylactic Acid)<br> มีจุดเสียรูปที่ความร้อนประมาณ 65°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
         ABS: "ABS (Acrylonitrile Butadiene Styrene)<br> มีจุดเสียรูปที่ความร้อนประมาณ 90°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
-        "PETG-CF": "PETG CF ยังไม่พร้อมใช้งานในขณะนี้"
+        "PETG-CF": "PETG CF (Carbon Fiber Reinforced) is designed for higher strength, durability, and rigidity, ideal for functional prototypes and high-performance parts."
       };
 
       const selectedFilament = document.getElementById("filament").value;
       const description = descriptions[selectedFilament] || "Select a filament type to see its description.";
-      document.getElementById("filamentDescription").innerHTML = <p>${description}</p>;
+      document.getElementById("filamentDescription").innerHTML = `<p>${description}</p>`;
     }
 
     function copyQuotation() {
