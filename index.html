@@ -105,8 +105,8 @@
 
       <label for="filament">Select Filament Type:</label>
       <select id="filament" onchange="updateFilamentDescription()">
-        <option value="PETG">PETG</option>
         <option value="PLA">PLA</option>
+        <option value="PETG">PETG</option>
         <option value="ABS">ABS</option>
         <option value="PETG-CF">PETG CF</option>
       </select>
@@ -133,11 +133,11 @@
     let calculatedInfo = "";
 
     function calculatePrice() {
-      const filamentRate = {
-        PETG: 2.4,
-        PLA: 2,
-        ABS: 3,
-        "PETG-CF": 2.8
+      const filamentRates = {
+        PLA: { rate: 2.0, baseFee: 150 },
+        PETG: { rate: 2.4, baseFee: 160 },
+        ABS: { rate: 3.0, baseFee: 180 },
+        "PETG-CF": { rate: 2.8, baseFee: 175 }
       };
       const selectedFilament = document.getElementById("filament").value;
       const weight = parseFloat(document.getElementById("weight").value) || 0;
@@ -145,26 +145,23 @@
       const minutes = parseFloat(document.getElementById("minutes").value) || 0;
 
       // Convert minutes to fractional hours
-      const totalHours = hours + (minutes / 60);
+      const totalMinutes = hours * 60 + minutes;
 
-      const ratePerHour = 10;
-      const baseFee = 150;
-      const filamentRatePerGram = filamentRate[selectedFilament] || 0;
+      // Calculate print time
+      const printTime = weight;  // 1 gram per minute
+      const materialCost = weight * filamentRates[selectedFilament].rate;
+      const printCost = (printTime / 60) * 10;  // 10 THB per hour
+      const baseFee = filamentRates[selectedFilament].baseFee;
 
-      // Calculate costs
-      const materialCost = weight * filamentRatePerGram;
-      const printingCost = totalHours * ratePerHour;
-      const calculatedPrice = materialCost + printingCost;
-
-      // Adjust base fee based on total price
+      // Calculate the total price
       let adjustedBaseFee = baseFee;
-      if (calculatedPrice > 600) {
-        const excess = calculatedPrice - 600;
+      if (materialCost + printCost > 600) {
+        const excess = materialCost + printCost - 600;
         const reduction = Math.min((excess / 400) * baseFee, baseFee);
         adjustedBaseFee = baseFee - reduction;
       }
 
-      const totalPrice = calculatedPrice + adjustedBaseFee;
+      const totalPrice = materialCost + printCost + adjustedBaseFee;
 
       document.getElementById("price").textContent = totalPrice.toFixed(2);
 
@@ -173,9 +170,9 @@
 
     function updateFilamentDescription() {
       const descriptions = {
+        PLA: "PLA (Polylactic Acid) <br> มีจุดเสียรูปที่ความร้อนประมาณ 65°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
         PETG: "PETG (Polyethylene Terephthalate Glycol) <br> มีจุดเสียรูปที่ความร้อนประมาณ 80°C เหมาะสำหรับชิ้นส่วนที่ต้องการความแข็งแรง ทนต่อการใช้งานกลางแจ้ง และทนต่อสารเคมี",
-        PLA: "PLA (Polylactic Acid)<br> มีจุดเสียรูปที่ความร้อนประมาณ 65°C เป็นวัสดุที่ใช้งานง่าย เหมาะสำหรับการพิมพ์ชิ้นงานทั่วไปและโมเดลตกแต่ง",
-        ABS: "ABS (Acrylonitrile Butadiene Styrene)<br> มีจุดเสียรูปที่ความร้อนประมาณ 90°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
+        ABS: "ABS (Acrylonitrile Butadiene Styrene) <br> มีจุดเสียรูปที่ความร้อนประมาณ 90°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
         "PETG-CF": "PETG CF (Carbon Fiber Reinforced) is designed for higher strength, durability, and rigidity, ideal for functional prototypes and high-performance parts."
       };
 
