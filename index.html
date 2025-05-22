@@ -111,18 +111,18 @@
         <option value="PETG-CF">PETG CF</option>
       </select>
 
-      <label for="weight">Material Weight (grams กรัม):</label>
+      <label for="weight">Material Weight (กรัม):</label>
       <input type="number" id="weight" placeholder="Enter weight in grams">
 
-      <label for="hours">Printing Time (Hours ชั่วโมง):</label>
+      <label for="hours">Printing Time (ชั่วโมง):</label>
       <input type="number" id="hours" placeholder="Enter hours">
 
-      <label for="minutes">Printing Time (Minutes นาที):</label>
+      <label for="minutes">Printing Time (นาที):</label>
       <input type="number" id="minutes" placeholder="Enter minutes">
 
       <button onclick="calculatePrice()">Calculate Price</button>
 
-      <h3>Total Price: <span id="price">0</span> THB</h3>
+      <h3>Total Price: <span id="price">0</span></h3>
 
       <!-- Copy Quotation Button -->
       <button id="copyButton" onclick="copyQuotation()" style="background-color: #2196F3;">Copy Quotation</button>
@@ -139,31 +139,30 @@
         ABS: { rate: 3.0, baseFee: 180 },
         "PETG-CF": { rate: 2.8, baseFee: 175 }
       };
+
       const selectedFilament = document.getElementById("filament").value;
       const weight = parseFloat(document.getElementById("weight").value) || 0;
       const hours = parseFloat(document.getElementById("hours").value) || 0;
       const minutes = parseFloat(document.getElementById("minutes").value) || 0;
-
-      // Convert minutes to fractional hours
       const totalMinutes = hours * 60 + minutes;
 
-      // Calculate print time
-      const printTime = weight;  // 1 gram per minute
-      const materialCost = weight * filamentRates[selectedFilament].rate;
-      const printCost = (printTime / 60) * 10;  // 10 THB per hour
-      const baseFee = filamentRates[selectedFilament].baseFee;
+      if (weight <= 0 || totalMinutes <= 0) {
+        alert("Please enter valid weight and time.");
+        return;
+      }
 
-      // Calculate the total price
-      let adjustedBaseFee = baseFee;
+      const materialCost = weight * filamentRates[selectedFilament].rate;
+      const printCost = (totalMinutes / 60) * 10;
+      let baseFee = filamentRates[selectedFilament].baseFee;
+
       if (materialCost + printCost > 600) {
         const excess = materialCost + printCost - 600;
         const reduction = Math.min((excess / 400) * baseFee, baseFee);
-        adjustedBaseFee = baseFee - reduction;
+        baseFee -= reduction;
       }
 
-      const totalPrice = materialCost + printCost + adjustedBaseFee;
-
-      document.getElementById("price").textContent = totalPrice.toFixed(2);
+      const totalPrice = materialCost + printCost + baseFee;
+      document.getElementById("price").textContent = totalPrice.toLocaleString("en-TH", { style: "currency", currency: "THB" });
 
       calculatedInfo = `Filament: ${selectedFilament}\nWeight: ${weight}g\nTime: ${hours}h ${minutes}m\nTotal Price: ${totalPrice.toFixed(2)} THB`;
     }
