@@ -79,6 +79,11 @@
     h3 {
       color: black;
     }
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
@@ -112,13 +117,13 @@
       </select>
 
       <label for="weight">Material Weight (กรัม):</label>
-      <input type="number" id="weight" placeholder="Enter weight in grams">
+      <input type="number" id="weight" placeholder="เช่น 150">
 
       <label for="hours">Printing Time (ชั่วโมง):</label>
-      <input type="number" id="hours" placeholder="Enter hours">
+      <input type="number" id="hours" placeholder="ชั่วโมง เช่น 2">
 
       <label for="minutes">Printing Time (นาที):</label>
-      <input type="number" id="minutes" placeholder="Enter minutes">
+      <input type="number" id="minutes" placeholder="นาที เช่น 30">
 
       <button onclick="calculatePrice()">Calculate Price</button>
 
@@ -162,9 +167,11 @@
       }
 
       const totalPrice = materialCost + printCost + baseFee;
-      document.getElementById("price").textContent = totalPrice.toLocaleString("en-TH", { style: "currency", currency: "THB" });
+      const roundedPrice = Math.ceil(totalPrice);
 
-      calculatedInfo = `Filament: ${selectedFilament}\nWeight: ${weight}g\nTime: ${hours}h ${minutes}m\nTotal Price: ${totalPrice.toFixed(2)} THB`;
+      document.getElementById("price").textContent = roundedPrice.toLocaleString("en-TH", { style: "currency", currency: "THB" });
+
+      calculatedInfo = `Filament: ${selectedFilament}\nWeight: ${weight}g\nTime: ${hours}h ${minutes}m\nTotal Price: ${roundedPrice} THB`;
     }
 
     function updateFilamentDescription() {
@@ -182,13 +189,9 @@
 
     function copyQuotation() {
       if (calculatedInfo) {
-        const textArea = document.createElement("textarea");
-        textArea.value = calculatedInfo;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        alert("Quotation copied to clipboard!");
+        navigator.clipboard.writeText(calculatedInfo).then(() => {
+          alert("Quotation copied to clipboard!");
+        });
       }
     }
 
