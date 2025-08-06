@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>3D Printing Service</title>
   <style>
     body {
@@ -60,11 +60,16 @@
       padding: 10px;
       font-size: 16px;
     }
-    input, select {
-      background-color: #f9f9f9;
-      color: black;
-      border: 1px solid #ccc;
-      border-radius: 3px;
+    input[type="range"] {
+      padding: 0;
+    }
+    .time-inputs {
+      display: flex;
+      gap: 10px;
+    }
+    .time-inputs input {
+      flex: 1;
+      margin: 0;
     }
     button {
       background-color: #4CAF50;
@@ -113,7 +118,7 @@
     <!-- Form Section -->
     <div class="form-container">
       <div class="header">
-        <img src="logo.png" alt="Logo">
+        <img src="logo.png" alt="Logo" />
         <h1>3D Printing Service</h1>
       </div>
 
@@ -126,15 +131,14 @@
       </select>
 
       <label for="weight">Material Weight (กรัม):</label>
-      <input type="number" id="weight" placeholder="เช่น 150">
+      <input type="number" id="weight" placeholder="เช่น 150" min="0" max="1000" />
+      <input type="range" id="weightSlider" min="0" max="1000" step="10" />
 
-      <label for="hours">Printing Time (ชั่วโมง):</label>
-      <input type="number" id="hours" placeholder="ชั่วโมง เช่น 2">
-
-      <label for="minutes">Printing Time (นาที):</label>
-      <input type="number" id="minutes" placeholder="นาที เช่น 30">
-
-      <button id="calculateButton" style="display:none;">Calculate Price</button>
+      <label>Printing Time:</label>
+      <div class="time-inputs">
+        <input type="number" id="hours" placeholder="ชั่วโมง" min="0"/>
+        <input type="number" id="minutes" placeholder="นาที" min="0" max="59"/>
+      </div>
 
       <h3>Total Price: <span id="price">0</span></h3>
       <div id="quotation"></div>
@@ -187,9 +191,8 @@
       calculatedInfo = `Filament: ${selectedFilament}
 Weight: ${weight}g
 Time: ${hours}h ${minutes}m
-Material Cost: ${materialCost.toFixed(2)} ฿
-Print Cost: ${printCost.toFixed(2)} ฿
-Base Fee: ${baseFee.toFixed(2)} ฿
+Printing Cost: ${(materialCost + printCost).toFixed(2)} ฿
+Small Order Fee: ${baseFee.toFixed(2)} ฿
 Total Price: ${roundedPrice.toLocaleString("th-TH")} ฿`;
 
       document.getElementById("quotation").textContent = calculatedInfo;
@@ -229,11 +232,22 @@ Total Price: ${roundedPrice.toLocaleString("th-TH")} ฿`;
     window.onload = function() {
       updateFilamentDescription();
       calculatePrice();
+
       document.getElementById("filament").addEventListener("change", () => {
         updateFilamentDescription();
         calculatePrice();
       });
-      document.getElementById("weight").addEventListener("input", calculatePrice);
+
+      document.getElementById("weight").addEventListener("input", (e) => {
+        document.getElementById("weightSlider").value = e.target.value;
+        calculatePrice();
+      });
+
+      document.getElementById("weightSlider").addEventListener("input", (e) => {
+        document.getElementById("weight").value = e.target.value;
+        calculatePrice();
+      });
+
       document.getElementById("hours").addEventListener("input", calculatePrice);
       document.getElementById("minutes").addEventListener("input", calculatePrice);
     };
