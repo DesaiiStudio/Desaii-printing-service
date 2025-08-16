@@ -151,6 +151,30 @@
   <script>
     let calculatedInfo = "";
 
+    // New tunable parameters
+    const SMALL_FEE_THRESHOLD = 250; // start reducing from here
+    const SMALL_FEE_TAPER = 400;     // fee goes to zero over this window (650 THB)
+
+    function normalizeTime() {
+      let h = parseInt(document.getElementById("hours").value || "0", 10);
+      let m = parseInt(document.getElementById("minutes").value || "0", 10);
+      h = Math.max(0, h);
+      m = Math.max(0, m);
+      if (m >= 60) {
+        h += Math.floor(m / 60);
+        m = m % 60;
+      }
+      document.getElementById("hours").value = h;
+      document.getElementById("minutes").value = m;
+    }
+
+    function calcSmallOrderFee(subtotal, baseFee) {
+      if (subtotal <= SMALL_FEE_THRESHOLD) return baseFee;
+      const excess = subtotal - SMALL_FEE_THRESHOLD;
+      const reduction = (excess / SMALL_FEE_TAPER) * baseFee;
+      return Math.max(baseFee - reduction, 0);
+    }
+
     function calculatePrice() {
       const filamentRates = {
         PLA: { rate: 2.0, baseFee: 150 },
@@ -160,7 +184,15 @@
       };
 
       const selectedFilament = document.getElementById("filament").value;
-      const weight = parseFloat(document.getElementById("weight").value) || 0;
+
+      const weightInput = document.getElementById("weight");
+      const weightSlider = document.getElementById("weightSlider");
+      let weight = parseFloat(weightInput.value) || 0;
+      weight = Math.max(0, weight);
+      weightInput.value = weight;
+      weightSlider.value = weight;
+
+      normalizeTime();
       const hours = parseFloat(document.getElementById("hours").value) || 0;
       const minutes = parseFloat(document.getElementById("minutes").value) || 0;
       const totalMinutes = hours * 60 + minutes;
@@ -175,25 +207,21 @@
       const rateInfo = filamentRates[selectedFilament];
       const materialCost = weight * rateInfo.rate;
       const printCost = (totalMinutes / 60) * 10;
-      let baseFee = rateInfo.baseFee;
+      const subtotal = materialCost + printCost;
 
-      // Dynamic small order fee adjustment
-      if (materialCost + printCost > 600) {
-        const excess = materialCost + printCost - 600;
-        const reduction = Math.min((excess / 400) * baseFee, baseFee);
-        baseFee -= reduction;
-      }
+      const smallOrderFee = calcSmallOrderFee(subtotal, rateInfo.baseFee);
 
-      const totalPrice = materialCost + printCost + baseFee;
+      const totalPrice = subtotal + smallOrderFee;
       const roundedPrice = Math.ceil(totalPrice);
 
-      document.getElementById("price").textContent = `${roundedPrice.toLocaleString("th-TH")} ฿`;
+      document.getElementById("price").textContent =
+        `${roundedPrice.toLocaleString("th-TH")} ฿`;
 
       calculatedInfo = `Filament: ${selectedFilament}
 Weight: ${weight}g
 Time: ${hours}h ${minutes}m
-Printing fee: ${(materialCost + printCost).toFixed(2)} ฿
-Small Order Fee: ${baseFee.toFixed(2)} ฿
+Printing fee: ${subtotal.toFixed(2)} ฿
+Small Order Fee: ${smallOrderFee.toFixed(2)} ฿
 Total Price: ${roundedPrice.toLocaleString("th-TH")} ฿`;
 
       document.getElementById("quotation").textContent = calculatedInfo;
@@ -206,7 +234,6 @@ Total Price: ${roundedPrice.toLocaleString("th-TH")} ฿`;
         ABS: "ABS (Acrylonitrile Butadiene Styrene) <br> มีจุดเสียรูปที่ความร้อนประมาณ 90°C เหมาะสำหรับงานที่ต้องการความแข็งแรงสูงและทนต่อความร้อน",
         "PETG-CF": "PETG CF (Carbon Fiber Reinforced) is designed for higher strength, durability, and rigidity, ideal for functional prototypes and high-performance parts."
       };
-
       const selectedFilament = document.getElementById("filament").value;
       const description = descriptions[selectedFilament] || "Select a filament type to see its description.";
       document.getElementById("filamentDescription").innerHTML = `<p>${description}</p>`;
@@ -232,6 +259,9 @@ Total Price: ${roundedPrice.toLocaleString("th-TH")} ฿`;
 
     window.onload = function() {
       updateFilamentDescription();
+      const weightInput = document.getElementById("weight");
+      const weightSlider = document.getElementById("weightSlider");
+      weightSlider.value = parseFloat(weightInput.value) || 0;
       calculatePrice();
 
       document.getElementById("filament").addEventListener("change", () => {
@@ -239,13 +269,13 @@ Total Price: ${roundedPrice.toLocaleString("th-TH")} ฿`;
         calculatePrice();
       });
 
-      document.getElementById("weight").addEventListener("input", (e) => {
-        document.getElementById("weightSlider").value = e.target.value;
+      weightInput.addEventListener("input", (e) => {
+        weightSlider.value = e.target.value;
         calculatePrice();
       });
 
-      document.getElementById("weightSlider").addEventListener("input", (e) => {
-        document.getElementById("weight").value = e.target.value;
+      weightSlider.addEventListener("input", (e) => {
+        weightInput.value = e.target.value;
         calculatePrice();
       });
 
