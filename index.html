@@ -155,7 +155,7 @@
       const filamentRates = {
         PLA: { rate: 2.0, baseFee: 150 },
         PETG: { rate: 2.4, baseFee: 160 },
-        ABS: { rate: 3.0, baseFee: 180 },
+        ABS:  { rate: 3.0, baseFee: 180 },
         "PETG-CF": { rate: 2.8, baseFee: 175 }
       };
 
@@ -177,6 +177,7 @@
       const printCost = (totalMinutes / 60) * 10;
       let baseFee = rateInfo.baseFee;
 
+      // Dynamic small order fee adjustment
       if (materialCost + printCost > 600) {
         const excess = materialCost + printCost - 600;
         const reduction = Math.min((excess / 400) * baseFee, baseFee);
@@ -191,7 +192,7 @@
       calculatedInfo = `Filament: ${selectedFilament}
 Weight: ${weight}g
 Time: ${hours}h ${minutes}m
-Printing Cost: ${(materialCost + printCost).toFixed(2)} ฿
+Printing Fee: ${(materialCost + printCost).toFixed(2)} ฿
 Small Order Fee: ${baseFee.toFixed(2)} ฿
 Total Price: ${roundedPrice.toLocaleString("th-TH")} ฿`;
 
